@@ -7,3 +7,7 @@ body {
 .hidden {
     display: none;
 }
+
+.board {
+    border: 4px solid black;
+}
