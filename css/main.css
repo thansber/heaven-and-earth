@@ -1,11 +1,26 @@
 body {
     font-family: Arial;
-    margin: 0;
+    margin: 1em auto;
     overflow: hidden;
+    width: 100%;
 }
 
 .hidden {
     display: none;
+}
+
+#version {
+    font-size: 0.75em;
+    position: absolute;
+    right: 1em;
+    top: 0.5em;
+}
+
+.illusion {
+    text-align: center;
+}
+
+.illusion.anti-maze {
 }
 
 .board {

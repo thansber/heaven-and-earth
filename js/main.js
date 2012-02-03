@@ -4,7 +4,7 @@ function($, AntiMaze, AntiMazeData, Timer) {
     $(document).ready(function() {
       console.log("LET'S GO");
       AntiMaze.init();
-      AntiMaze.load(AntiMazeData.lookup("ocean", 0));
+      AntiMaze.load(AntiMazeData.lookup("mountain", 0));
     });
   }
 );
