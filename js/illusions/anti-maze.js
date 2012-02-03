@@ -159,6 +159,7 @@ function($) {
     adjustPlayerPos(currentPuzzle.player.x, currentPuzzle.player.y);
     drawPlayer();
     drawTargets();
+    setTitle(puzzle.name);
   };
   
   var move = function(x, y) {
@@ -263,6 +264,10 @@ function($) {
   
   var setCanvasOptions = function() {
     ctx.lineWidth = 2;
+  };
+  
+  var setTitle = function(title) {
+    $(canvas).siblings(".title").text(title);
   };
   
   var storeHorizontalWalls = function(line) {

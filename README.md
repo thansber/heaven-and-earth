@@ -10,6 +10,15 @@ Illusions being worked on
 -------------------------
 * Anti-maze
 
+TODOs
+-----
+* populate menu dynamically
+* expand wall width to 4, shrink player, targets
+* add shadows to walls
+* get proper colors for puzzle types
+* holding down key moves multiple times?
+* allow mouse movement?
+
 Future Illusion plans
 ---------------------
 
