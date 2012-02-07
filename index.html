@@ -9,21 +9,22 @@
 </head>
 <body>
 
-<div id="version">v0.2</div>
+<div id="version">v0.3</div>
 
 <section class="anti-maze illusion">
-  <div class="menu">
+  <div class="menu show">
     <h1>Menu</h1>
     <div class="arrow"></div>
-    <ul class="options">
-      <li>Ocean</li>
-      <li>Desert</li>
-      <li>Mountain</li>
-      <li>Sky</li>
-    </ul>
+    <ul class="ocean levels"><li class="type">Ocean</li></ul>
+    <ul class="desert levels"><li class="type">Desert</li></ul>
+    <ul class="mountain levels"><li class="type">Mountain</li></ul>
+    <ul class="sky levels"><li class="type">Sky</li></ul>
   </div>
   <h2 class="title"></h2>
-  <canvas id="anti-maze" class="board"></canvas>
+  <div class="board">
+    <canvas id="anti-maze"></canvas>
+    <h3 class="win">Illusion Mastered!</h3>
+  </div>
 </section>
 </body>
 </html>  

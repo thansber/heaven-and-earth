@@ -1,16 +1,9 @@
 require(
-["jquery", "illusions/anti-maze", "illusions/data/anti-maze", "lib/jquery.timer"], 
-function($, AntiMaze, AntiMazeData, Timer) {
+["jquery", "illusions/anti-maze", "illusions/data/anti-maze", "lib/jquery.timer", "util"], 
+function($, AntiMaze, AntiMazeData, Timer, Util) {
     $(document).ready(function() {
-      console.log("LET'S GO");
+      Util.init();
       AntiMaze.init();
-      
-      $("section.illusion .menu").click(function() {
-        $(this).toggleClass("show");
-        return false;
-      });
-      
-      AntiMaze.load(AntiMazeData.lookup("mountain", 0));
     });
   }
 );

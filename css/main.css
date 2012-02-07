@@ -21,8 +21,47 @@ body {
 }
 
 .board {
-    border: 2px solid black;
-    margin-top: 0.5em;
+    border: 1px solid black;
+    display: none;
+    margin: 0.5em auto;
+    padding: 1px;
+    margin: 0.5em auto;
+}
+
+.board .win {
+    border-color: #FFFFFF #0000FF #0000FF #FFFFFF;
+    border-style: solid;
+    border-width: 3px;
+    color: #0000FF;
+    display: none; font-family : Palatino;
+    font-size: 1.7em;
+    font-style: italic;
+    height: 2.3em;
+    left: 50%;
+    margin-left: -2.5em;
+    margin-top: -1.15em;
+    padding: 0.1em 0 0 0;
+    position: absolute;
+    top: 50%;
+    width: 5em;
+    font-family: Palatino;
+}
+
+body.ocean,body.ocean .board,body.ocean .board .win {
+    background-color: #00E7FF;
+}
+
+body.desert,boy.desert .board,body.desert .board .win {
+    background-color: #F7BA8A;
+}
+
+body.mountain,body.mountain .board,body.mountain .board .win {
+    background-color: #D3E3FF;
+    border-color: #FFFFFF;
+}
+
+body.sky,body.sky .board,body.sky .board .win {
+    background-color: #82FFFF;
 }
 
 .title {
@@ -31,15 +70,16 @@ body {
 }
 
 .menu {
+    background-color: white;
     border: 2px solid #555;
-    border-left: 0;
+    border-top: 0;
     border-radius: 10px;
-    height: 34px;
-    left: -0.5em;
+    height: 3em;
+    left: 1em;
     overflow: hidden;
     position: absolute;
-    top: 3.25em;
-    transition-property: height, right, width;
+    top: -0.5em;
+    transition-property: height, width;
     transition-duration: 0.5s;
     transition-timing-function: ease;
     width: 10em;
@@ -47,16 +87,16 @@ body {
 }
 
 .menu h1 {
-    background: linear-gradient(#222, #555) no-repeat;
+    background: linear-gradient(#555, #222) no-repeat;
     color: white;
     cursor: pointer;
     font-size: 1.4em;
-    padding: 5px 30px;
     margin: 0;
+    padding: 0.75em 30px 0.5em;
 }
 
 .menu h1:hover {
-    background: linear-gradient(#555, #222) no-repeat;
+    background: linear-gradient(#222, #555) no-repeat;
 }
 
 .menu .arrow {
@@ -65,32 +105,43 @@ body {
     border-left: 10px solid transparent;
     cursor: pointer;
     height: 0;
-    right: 13px;
+    right: 0.8em;
     position: absolute;
-    top: 14px;
+    top: 1.5em;
     width: 0;
 }
 
-.menu .options {
-    background-color: white;
+.menu .levels {
+    float: left;
     list-style-type: none;
     margin: 0;
     padding: 0.8em 0.8em 0.4em 1em;
     text-align: left;
 }
 
-.menu .options li {
+.menu .levels li {
     cursor: pointer;
+    font-size: 0.9em;
+    padding-bottom: 0.2em;
+}
+
+.menu .levels li.type {
+    cursor: default;
     font-size: 1.2em;
     padding-bottom: 0.2em;
 }
 
-.menu .options li:hover {
+.menu .levels li:hover {
     color: #4c9335;
 }
 
+.menu .levels li.type:hover {
+    color: #222;
+}
+
 .menu.show {
-    height: 17em;
+    height: 23em;
+    width: 40em;
 }
 
 .menu.show h1 {

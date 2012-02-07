@@ -9,7 +9,7 @@ function(Constants) {
   }
   
   var TypeRules = {};
-  TypeRules[Constants.Types.Ocean] = {allowsWrapping:false, targetSwitchesMovementRule:false};
+  TypeRules[Constants.Types.Ocean] = {wallShadowColor:"#008EFF", allowsWrapping:false, targetSwitchesMovementRule:false};
   TypeRules[Constants.Types.Desert] = {allowsWrapping:false, targetSwitchesMovementRule:false};
   TypeRules[Constants.Types.Mountain] = {allowsWrapping:true, targetSwitchesMovementRule:false};
   TypeRules[Constants.Types.Sky] = {allowsWrapping:true, targetSwitchesMovementRule:true};
@@ -28,7 +28,7 @@ function(Constants) {
   /* ================= */
   new Puzzle(Constants.Types.Ocean, "Right Turn", {
     width:14, height:9, player:{x:0,y:0}, targets:[{x:13,y:8}],
-    vertical: ["101","201","301","401","501","601","701","801","901","a01","b01","c01","d01","c61","d61","c81","d81"],
+    vertical: ["101","201","301","401","501","601","701","801","901","a01","b01","c01","d01","c51","d51","c81","d81"],
     horizontal: ["d11","d21","d31","d41","d51","b61","d61","b71","d71","b81"]});
   new Puzzle(Constants.Types.Ocean, "Switchbacks", {
     width:9, height:9, player:{x:1,y:1}, targets:[{x:7,y:7}],
@@ -36,12 +36,14 @@ function(Constants) {
     horizontal: ["117","126","831","641","851","661","781","871"]});
   new Puzzle(Constants.Types.Ocean, "Direct Route", {
     width:14, height:9, player:{x:1,y:1}, targets:[{x:12,y:6}],
-    vertical: [],
-    horizontal: []});
+    vertical: ["111","221","301","421","526","623","662","701","761","821","841","901","962",
+               "a21","a52","a81","b01","b31","b51","c21","c61","c81","d13","d53"],
+    horizontal: ["11c","124","441","471","581","626","631","654","663","984","a72","b31","b42","b52","b61"]});
   new Puzzle(Constants.Types.Ocean, "Illusions", {
     width:14, height:9, player:{x:1,y:4}, targets:[{x:13,y:6}],
-    vertical: [],
-    horizontal: []});
+    vertical: ["043","134","234","334","442","471","543","631","651","671","743","843","931","951",
+               "a43","b31","b52","c44","d71","e43"],
+    horizontal: ["041","07e","132","34b","561","651","c61","d51"]});
   new Puzzle(Constants.Types.Ocean, "Nest", {
     width:14, height:9, player:{x:0,y:0}, targets:[{x:13,y:8}],
     vertical: [],
@@ -105,6 +107,7 @@ function(Constants) {
   
   
   return {
+    All : ALL_BY_INDEX,
     lookup : function(type, index) { return ALL_BY_INDEX[type][index]; }
   };
 });
