@@ -20,7 +20,16 @@ function($, AntiMazeData, Constants) {
       numAnimations: 5
     }
   };
-  images[Constants.Types.Desert] = {player:{name:"player-desert.png"}, target:{name:"target-desert.png"}};
+  images[Constants.Types.Desert] = {
+    player: {
+      name: "player-desert.png",
+      numAnimations: 1
+    }, 
+    target: {
+      name: "target-desert.png",
+      numAnimations: 6
+    }
+  };
   var expectedImages = 4;
   var imagesLoaded = 0;
   var options = {
@@ -36,7 +45,7 @@ function($, AntiMazeData, Constants) {
   var currentPuzzleHorizontalWalls = [];
   var currentTargets = [];
   var currentPlayerFrame = 0;
-  var currentTargetFrame = 0;
+  var currentTargetFrame = [];
 
   var playerPos = {x:0,y:0};
   
@@ -70,8 +79,12 @@ function($, AntiMazeData, Constants) {
     requestAnimFrame(animate);
     animationCount++;
     if (animationCount % 10 == 0) {
-      drawPlayer();
-      drawTargets();
+        if (images[currentPuzzle.type].player.numAnimations > 1) {
+          drawPlayer();
+        }
+        if (images[currentPuzzle.type].target.numAnimations > 1) {
+          drawTargets();
+        }
     }
   };
   
@@ -109,15 +122,14 @@ function($, AntiMazeData, Constants) {
   var drawTargets = function() {
     var puzzleTargetImage = images[currentPuzzle.type].target;
     var img = puzzleTargetImage.img;
-    var targetEndArc = 2 * Math.PI; // 360 degress
-    for (var t = 0; t < currentPuzzle.targets.length; t++) {
-      var target =  currentPuzzle.targets[t];
+    for (var t = 0; t < currentTargets.length; t++) {
+      var target = currentTargets[t];
       var x = targetX(target);
       var y = targetY(target);
-      ctx.drawImage(img, currentTargetFrame * options.targetSize, 0, options.targetSize, options.targetSize, x, y, options.targetSize, options.targetSize);
-      currentTargetFrame++;
-      if (currentTargetFrame >= puzzleTargetImage.numAnimations) {
-        currentTargetFrame = 0;
+      ctx.drawImage(img, currentTargetFrame[t] * options.targetSize, 0, options.targetSize, options.targetSize, x, y, options.targetSize, options.targetSize);
+      currentTargetFrame[t]++;
+      if (currentTargetFrame[t] >= puzzleTargetImage.numAnimations) {
+        currentTargetFrame[t] = 0;
       }
     }
   };
@@ -234,8 +246,13 @@ function($, AntiMazeData, Constants) {
     $("body").removeClass().addClass(puzzle.type);
     resizeCanvas(canvas, puzzle.width, puzzle.height, options.tileSize, options.tileSize);
     reset();
+    
     currentPuzzle = $.extend(true, {}, puzzle);
     currentTargets = $.merge([], currentPuzzle.targets);
+    
+    $.each(currentTargets, function(t) {
+      currentTargetFrame[t] = 0; 
+    });
     
     // wall shadows
     drawVerticalWalls(true);
@@ -250,7 +267,7 @@ function($, AntiMazeData, Constants) {
     
     adjustPlayerPos(currentPuzzle.player.x, currentPuzzle.player.y);
     drawPlayer();
-    drawTargets();
+    //drawTargets();
     setTitle(puzzle.name);
     $board.show();
     
@@ -366,6 +383,7 @@ function($, AntiMazeData, Constants) {
     playerMovingThruWalls = true;
     currentPuzzleVerticalWalls = [];
     currentPuzzleHorizontalWalls = [];
+    currentTargetFrame = [];
     $win.hide();
   };
   

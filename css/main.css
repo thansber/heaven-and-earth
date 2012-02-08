@@ -25,15 +25,14 @@ body {
     display: none;
     margin: 0.5em auto;
     padding: 1px;
-    margin: 0.5em auto;
+    position: relative;
 }
 
 .board .win {
-    border-color: #FFFFFF #0000FF #0000FF #FFFFFF;
     border-style: solid;
     border-width: 3px;
-    color: #0000FF;
-    display: none; font-family : Palatino;
+    display: none;
+    font-family: Palatino;
     font-size: 1.7em;
     font-style: italic;
     height: 2.3em;
@@ -44,23 +43,42 @@ body {
     position: absolute;
     top: 50%;
     width: 5em;
-    font-family: Palatino;
 }
 
-body.ocean,body.ocean .board,body.ocean .board .win {
+body.ocean,body.ocean .board {
     background-color: #00E7FF;
 }
 
-body.desert,boy.desert .board,body.desert .board .win {
+body.ocean .board .win {
+    background-color: #00E7FF;
+    border-color: #FFFFFF #0000FF #0000FF #FFFFFF;
+    color: #0000FF;
+}
+
+body.desert,boy.desert .board {
     background-color: #F7BA8A;
 }
 
-body.mountain,body.mountain .board,body.mountain .board .win {
+body.desert .board .win {
+    background-color: #F7BA8A;
+    border-color: #FFFFFF #926138 #926138 #FFFFFF;
+    color: #926138;
+}
+
+body.mountain,body.mountain .board {
     background-color: #D3E3FF;
     border-color: #FFFFFF;
 }
 
-body.sky,body.sky .board,body.sky .board .win {
+body.mountain .board .win {
+    background-color: #D3E3FF;
+}
+
+body.sky,body.sky .board {
+    background-color: #82FFFF;
+}
+
+body.sky .board .win {
     background-color: #82FFFF;
 }
 
