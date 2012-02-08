@@ -267,7 +267,7 @@ function($, AntiMazeData, Constants) {
     
     adjustPlayerPos(currentPuzzle.player.x, currentPuzzle.player.y);
     drawPlayer();
-    //drawTargets();
+    drawTargets();
     setTitle(puzzle.name);
     $board.show();
     
