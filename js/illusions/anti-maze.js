@@ -30,6 +30,16 @@ function($, AntiMazeData, Constants) {
       numAnimations: 6
     }
   };
+  images[Constants.Types.Mountain] = {
+    player: {
+      name: "player-mountain.png",
+      numAnimations: 4
+    }, 
+    target: {
+      name: "target-mountain.png",
+      numAnimations: 6
+    }
+  };
   var expectedImages = 4;
   var imagesLoaded = 0;
   var options = {
@@ -46,6 +56,8 @@ function($, AntiMazeData, Constants) {
   var currentTargets = [];
   var currentPlayerFrame = 0;
   var currentTargetFrame = [];
+  var numTargetsFound = 0;
+  var numTotalTargets = 0;
 
   var playerPos = {x:0,y:0};
   
@@ -68,7 +80,7 @@ function($, AntiMazeData, Constants) {
       playerPos.x = 0;
     }
     if (playerPos.y >= currentPuzzle.height) {
-      playerPis.y = 0;
+      playerPos.y = 0;
     }
   };
   
@@ -120,17 +132,19 @@ function($, AntiMazeData, Constants) {
     }
   };  
   var drawTargets = function() {
+    for (var t = 0; t < currentTargets.length; t++) {
+      drawTarget(currentTargets[t], t);
+    }
+  };
+  var drawTarget = function(target, t) {
     var puzzleTargetImage = images[currentPuzzle.type].target;
     var img = puzzleTargetImage.img;
-    for (var t = 0; t < currentTargets.length; t++) {
-      var target = currentTargets[t];
-      var x = targetX(target);
-      var y = targetY(target);
-      ctx.drawImage(img, currentTargetFrame[t] * options.targetSize, 0, options.targetSize, options.targetSize, x, y, options.targetSize, options.targetSize);
-      currentTargetFrame[t]++;
-      if (currentTargetFrame[t] >= puzzleTargetImage.numAnimations) {
-        currentTargetFrame[t] = 0;
-      }
+    var x = targetX(target);
+    var y = targetY(target);
+    ctx.drawImage(img, currentTargetFrame[t] * options.targetSize, 0, options.targetSize, options.targetSize, x, y, options.targetSize, options.targetSize);
+    currentTargetFrame[t]++;
+    if (currentTargetFrame[t] >= puzzleTargetImage.numAnimations) {
+      currentTargetFrame[t] = 0;
     }
   };
   
@@ -248,10 +262,13 @@ function($, AntiMazeData, Constants) {
     reset();
     
     currentPuzzle = $.extend(true, {}, puzzle);
-    currentTargets = $.merge([], currentPuzzle.targets);
     
-    $.each(currentTargets, function(t) {
-      currentTargetFrame[t] = 0; 
+    $.each(currentPuzzle.targets, function(t, target) {
+      if (!target.fake) {
+        numTotalTargets++;
+      }
+      currentTargets.push(target);
+      currentTargetFrame.push(0); 
     });
     
     // wall shadows
@@ -281,7 +298,6 @@ function($, AntiMazeData, Constants) {
         img.onload = function() {
           imagesLoaded++;
           if (imagesLoaded == expectedImages) {
-            console.log("all images loaded");
             initMenu();
           }
         };
@@ -323,8 +339,8 @@ function($, AntiMazeData, Constants) {
       var targetIndex = isPlayerOnTarget(); 
       if (targetIndex >= 0) {
         clearTarget(targetIndex);
-        
-        if (currentTargets.length == 0) {
+        numTargetsFound++;
+        if (numTargetsFound == numTotalTargets) {
           playerWins();
           return false;
         }
@@ -383,7 +399,10 @@ function($, AntiMazeData, Constants) {
     playerMovingThruWalls = true;
     currentPuzzleVerticalWalls = [];
     currentPuzzleHorizontalWalls = [];
+    currentTargets = [];
     currentTargetFrame = [];
+    numTargetsFound = 0;
+    numTotalTargets = 0;
     $win.hide();
   };
   
