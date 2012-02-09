@@ -72,6 +72,8 @@ body.mountain,body.mountain .board {
 
 body.mountain .board .win {
     background-color: #D3E3FF;
+    border-color: #FFFFFF #616DA6 #616DA6 #FFFFFF;
+    color: #616DA6;
 }
 
 body.sky,body.sky .board {
@@ -80,6 +82,8 @@ body.sky,body.sky .board {
 
 body.sky .board .win {
     background-color: #82FFFF;
+    border-color: #FFFFFF #00A2FF #00A2FF #FFFFFF;
+    color: #00A2FF;
 }
 
 .title {
