@@ -106,20 +106,58 @@ function($, AntiMazeData, Constants) {
     ctx.clearRect(targetX(target), targetY(target), options.targetSize, options.targetSize);
     currentTargets.splice(index, 1);
   };
-  var drawHorizontalWalls = function(isShadow) {
+  
+  var clearHorizontalWall = function(wallX, wallY, wallIndex) {
+    // clear the wall first
+    drawHorizontalWall(parseLineData(currentPuzzle.horizontal[wallIndex].split("")), {shadow:true, clear:true});
+    // delete it from the local arrays
+    currentPuzzleHorizontalWalls[wallX][wallY] = null;
+    currentPuzzle.horizontal[wallIndex] = null;
+    // re-draw other walls
+    drawHorizontalWalls({shadow:true});
+    drawHorizontalWalls({shadow:false});
+    drawVerticalWalls({shadow:false}); 
+  };
+  
+  var clearVerticalWall = function(wallX, wallY, wallIndex) {
+    // clear the wall first
+    drawVerticalWall(parseLineData(currentPuzzle.vertical[wallIndex].split("")), {shadow:true, clear:true});
+    // delete it from the local arrays
+    currentPuzzleVerticalWalls[wallX][wallY] = null;
+    currentPuzzle.vertical[wallIndex] = null;
+    // re-draw other walls
+    drawVerticalWalls({shadow:true}); 
+    drawVerticalWalls({shadow:false}); 
+    drawHorizontalWalls({shadow:false});
+  };
+  
+  var drawHorizontalWalls = function(opt) {
+    var wallOptions = $.extend({shadow:false, store:false}, opt);
     var walls = currentPuzzle.horizontal;
     for (var i = 0; i < walls.length; i++) {
-      var line = parseLineData(walls[i].split(""));
-      var wallStart = {x:line.x, y:line.y + 1.5};
-      var wallEnd = {x:line.x + ctx.lineWidth + (options.tileSize * line.len), y:wallStart.y};
-      
-      //console.log("drawing a horizontal wall " + (iShadow ? "shadow " : " ") + "at (" + line.x + "," + line.y + ") for " + line.len + " tiles");
-      storeHorizontalWalls(line);
-      drawWall(isShadow ? currentPuzzle.wallShadowColor : "#000000",
-               {x:wallStart.x + (isShadow ? ctx.lineWidth : 0), y:wallStart.y + (isShadow ? ctx.lineWidth : 0)},
-               {x:wallEnd.x + (isShadow ? ctx.lineWidth : 0), y:wallEnd.y + (isShadow ? ctx.lineWidth : 0)});
+      if (walls[i]) {
+        var line = parseLineData(walls[i].split(""));
+        if (wallOptions.store) {
+          storeHorizontalWalls(line, i);
+        }
+        drawHorizontalWall(line, wallOptions);
+      }
     }
   };
+  
+  var drawHorizontalWall = function(line, opt) {
+    var wallOptions = $.extend({shadow:false, clear:false}, opt);
+    var wallStart = {x:line.x + (wallOptions.shadow ? ctx.lineWidth : 0), y:line.y + 1.5 + (wallOptions.shadow ? ctx.lineWidth : 0)};
+    var wallEnd = {x:line.x + ctx.lineWidth + (options.tileSize * line.len) + (wallOptions.shadow ? ctx.lineWidth : 0), y:wallStart.y};
+    
+    // Temp lines only have their shadow drawn
+    if (!line.temporary || wallOptions.shadow) {
+      var color = wallOptions.clear ? $board.css("backgroundColor") : (wallOptions.shadow ? currentPuzzle.wallShadowColor : "#000000");
+      //console.log("drawing a vertical line at (" + line.x + "," + line.y + ") for " + line.len + " tiles");
+      drawWall(color, wallStart, wallEnd);
+    }
+  };
+  
   var drawPlayer = function() {
     var puzzlePlayerImage = images[currentPuzzle.type].player;
     var img = puzzlePlayerImage.img;
@@ -148,17 +186,30 @@ function($, AntiMazeData, Constants) {
     }
   };
   
-  var drawVerticalWalls = function(isShadow) {
+  var drawVerticalWalls = function(opt) {
+    var wallOptions = $.extend({shadow:false, store:false}, opt);
     var walls = currentPuzzle.vertical;
     for (var i = 0; i < walls.length; i++) {
-      var line = parseLineData(walls[i].split(""));
-      var wallStart = {x:line.x + 1.5, y:line.y};
-      var wallEnd = {x:wallStart.x, y:line.y + ctx.lineWidth + (options.tileSize * line.len)};
+      if (walls[i]) {
+        var line = parseLineData(walls[i].split(""));
+        if (wallOptions.store) {
+          storeVerticalWalls(line, i);
+        }
+        drawVerticalWall(line, wallOptions);
+      }
+    }
+  };
+  
+  var drawVerticalWall = function(line, opt) {
+    var wallOptions = $.extend({shadow:false, clear:false}, opt);
+    var wallStart = {x:line.x + 1.5 + (wallOptions.shadow ? ctx.lineWidth : 0), y:line.y + (wallOptions.shadow ? ctx.lineWidth : 0)};
+    var wallEnd = {x:wallStart.x, y:line.y + ctx.lineWidth + (options.tileSize * line.len) + (wallOptions.shadow ? ctx.lineWidth : 0)};
+    
+    // Temp lines only have their shadow drawn
+    if (!line.temporary || wallOptions.shadow) {
+      var color = wallOptions.clear ? $board.css("backgroundColor") : (wallOptions.shadow ? currentPuzzle.wallShadowColor : "#000000");
       //console.log("drawing a vertical line at (" + line.x + "," + line.y + ") for " + line.len + " tiles");
-      storeVerticalWalls(line);
-      drawWall(isShadow ? currentPuzzle.wallShadowColor : "#000000",
-               {x:wallStart.x + (isShadow ? ctx.lineWidth : 0), y:wallStart.y + (isShadow ? ctx.lineWidth : 0)},
-               {x:wallEnd.x + (isShadow ? ctx.lineWidth : 0), y:wallEnd.y + (isShadow ? ctx.lineWidth : 0)});
+      drawWall(color, wallStart, wallEnd);
     }
   };
   
@@ -252,7 +303,7 @@ function($, AntiMazeData, Constants) {
   };
   
   var isWallHere = function(walls, x, y) {
-    return !!walls[x] && !!walls[x][y];
+    return !!walls[x] ? walls[x][y] : null;
   };
   
   var load = function(puzzle) {
@@ -272,12 +323,12 @@ function($, AntiMazeData, Constants) {
     });
     
     // wall shadows
-    drawVerticalWalls(true);
-    drawHorizontalWalls(true);
+    drawVerticalWalls({shadow:true, store:false});
+    drawHorizontalWalls({shadow:true, store:false});
 
     // walls
-    drawVerticalWalls(false);
-    drawHorizontalWalls(false);
+    drawVerticalWalls({shadow:false, store:true});
+    drawHorizontalWalls({shadow:false, store:true});
 
     //wallsToString(currentPuzzleVerticalWalls);
     //wallsToString(currentPuzzleHorizontalWalls);
@@ -317,20 +368,29 @@ function($, AntiMazeData, Constants) {
 
     var wallX = Math.max(playerPos.x, playerPos.x + x) - 0.5;
     var wallY = playerPos.y;
-    var isWallThere = isWallHere(currentPuzzleVerticalWalls, wallX, wallY);
+    var walls = null;
+    var isWallThere = false;
     var isAllowed = false; 
+    
     if (x) {
       wallX = Math.max(playerPos.x, playerPos.x + x) - 0.5;
       wallY = playerPos.y;
       isWallThere = isWallHere(currentPuzzleVerticalWalls, wallX, wallY);
+      if (!!isWallThere && isWallThere.temporary) {
+        clearVerticalWall(wallX, wallY, isWallThere.index);
+      }
     } else if (y) {
       wallX = playerPos.x;
       wallY = Math.max(playerPos.y, playerPos.y + y) - 0.5;
+      walls = currentPuzzleHorizontalWalls;
       isWallThere = isWallHere(currentPuzzleHorizontalWalls, wallX, wallY);
+      if (!!isWallThere && isWallThere.temporary) {
+        clearHorizontalWall(wallX, wallY, isWallThere.index);
+      }
     }
-
-    isAllowed = !(playerMovingThruWalls ^ isWallThere);
-    //console.log("wall at (" + wallX + "," + wallY + ")=" + isWallThere + ", allowed=" + isAllowed);
+    
+    isAllowed = !(playerMovingThruWalls ^ !!isWallThere);
+    //console.log("wall at (" + wallX + "," + wallY + ")=" + !!isWallThere + ", allowed=" + isAllowed);
 
     if (isAllowed) {
       clearPlayer();
@@ -350,6 +410,13 @@ function($, AntiMazeData, Constants) {
     }
   };
   
+  /**
+   * Line data is of the format "XYZ[~]" where:
+   * X - the x coordinate of the top-left most point of the line
+   * Y - the y coordinate of the top-left most point of the line
+   * Z - the length of the line
+   * ~ - optional, if present, this wall is temporary and will vanish once traversed
+   */
   var parseLineData = function(lineData) {
     var tileX = parseInt(lineData[0], 36);
     var tileY = parseInt(lineData[1], 36);
@@ -358,7 +425,8 @@ function($, AntiMazeData, Constants) {
       y: options.tileSize * tileY,
       tileX: tileX,
       tileY: tileY,
-      len : parseInt(lineData[2], 36)
+      len: parseInt(lineData[2], 36),
+      temporary: (lineData.length > 3 && lineData[3] == "~") 
     };
   };
   
@@ -426,7 +494,7 @@ function($, AntiMazeData, Constants) {
     $(canvas).closest(".illusion").find(".title").text(title);
   };
   
-  var storeHorizontalWalls = function(line) {
+  var storeHorizontalWalls = function(line, index) {
     var wallY = line.tileY - 0.5;
     for (var i = line.tileX, n = line.tileX + line.len; i < n; i++) {
       var walls = currentPuzzleHorizontalWalls[i];
@@ -434,11 +502,14 @@ function($, AntiMazeData, Constants) {
         walls = [];
         currentPuzzleHorizontalWalls[i] = walls;
       }
-      walls[wallY] = true;
+      walls[wallY] = {
+        temporary: line.temporary,
+        index: index
+      };
     }
   };
   
-  var storeVerticalWalls = function(line) {
+  var storeVerticalWalls = function(line, index) {
     var wallX = line.tileX - 0.5;
     for (var i = line.tileY, n = line.tileY + line.len; i < n; i++) {
       var walls = currentPuzzleVerticalWalls[wallX];
@@ -446,7 +517,10 @@ function($, AntiMazeData, Constants) {
         walls = [];
         currentPuzzleVerticalWalls[wallX] = walls;
       }
-      walls[i] = true;
+      walls[i] = {
+        temporary: line.temporary,
+        index: index
+      };
     }
   };
   
