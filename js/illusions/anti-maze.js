@@ -15,32 +15,47 @@ function($, AntiMazeData, Constants) {
       name: "player-ocean.png",
       numAnimations:6
     }, 
-    target: {
+    target: [{
       name: "target-ocean.png",
       numAnimations: 5
-    }
+    }]
   };
   images[Constants.Types.Desert] = {
     player: {
       name: "player-desert.png",
       numAnimations: 1
     }, 
-    target: {
+    target: [{
       name: "target-desert.png",
       numAnimations: 6
-    }
+    }]
   };
   images[Constants.Types.Mountain] = {
     player: {
       name: "player-mountain.png",
       numAnimations: 4
     }, 
-    target: {
+    target: [{
       name: "target-mountain.png",
       numAnimations: 6
-    }
+    }]
   };
-  var expectedImages = 4;
+  images[Constants.Types.Sky] = {
+    player: {
+      name: "player-sky.png",
+      numAnimations: 5
+    }, 
+    target: [
+      {
+        name: "target-sky-inner.png",
+        numAnimations: 6
+      },
+      {
+        name: "target-sky-outer.png",
+        numAnimations: 5
+      }]
+  };
+  var expectedImages = 9;
   var imagesLoaded = 0;
   var options = {
     tileSize: 34,
@@ -65,6 +80,7 @@ function($, AntiMazeData, Constants) {
 
   var ArrowKeys = {Left:"37",Up:"38",Right:"39",Down:"40"};
   var wallRegex = /[w]/;
+  var temporaryWallIndicator = "~";
   
   var adjustPlayerPos = function(x, y) {
     playerPos.x += x;
@@ -91,12 +107,17 @@ function($, AntiMazeData, Constants) {
     requestAnimFrame(animate);
     animationCount++;
     if (animationCount % 10 == 0) {
-        if (images[currentPuzzle.type].player.numAnimations > 1) {
-          drawPlayer();
-        }
-        if (images[currentPuzzle.type].target.numAnimations > 1) {
-          drawTargets();
-        }
+      if (images[currentPuzzle.type].player.numAnimations > 1) {
+        drawPlayer();
+      }
+      
+      var anyTargetAnimations = false;
+      $.each(images[currentPuzzle.type].target, function(i, targetImage) {
+        anyTargetAnimations = anyTargetAnimations || targetImage.numAnimations > 1
+      });
+      if (anyTargetAnimations) {
+        drawTargets();
+      }
     }
   };
   
@@ -105,30 +126,6 @@ function($, AntiMazeData, Constants) {
     var target = currentTargets[index];
     ctx.clearRect(targetX(target), targetY(target), options.targetSize, options.targetSize);
     currentTargets.splice(index, 1);
-  };
-  
-  var clearHorizontalWall = function(wallX, wallY, wallIndex) {
-    // clear the wall first
-    drawHorizontalWall(parseLineData(currentPuzzle.horizontal[wallIndex].split("")), {shadow:true, clear:true});
-    // delete it from the local arrays
-    currentPuzzleHorizontalWalls[wallX][wallY] = null;
-    currentPuzzle.horizontal[wallIndex] = null;
-    // re-draw other walls
-    drawHorizontalWalls({shadow:true});
-    drawHorizontalWalls({shadow:false});
-    drawVerticalWalls({shadow:false}); 
-  };
-  
-  var clearVerticalWall = function(wallX, wallY, wallIndex) {
-    // clear the wall first
-    drawVerticalWall(parseLineData(currentPuzzle.vertical[wallIndex].split("")), {shadow:true, clear:true});
-    // delete it from the local arrays
-    currentPuzzleVerticalWalls[wallX][wallY] = null;
-    currentPuzzle.vertical[wallIndex] = null;
-    // re-draw other walls
-    drawVerticalWalls({shadow:true}); 
-    drawVerticalWalls({shadow:false}); 
-    drawHorizontalWalls({shadow:false});
   };
   
   var drawHorizontalWalls = function(opt) {
@@ -175,15 +172,19 @@ function($, AntiMazeData, Constants) {
     }
   };
   var drawTarget = function(target, t) {
-    var puzzleTargetImage = images[currentPuzzle.type].target;
-    var img = puzzleTargetImage.img;
-    var x = targetX(target);
-    var y = targetY(target);
-    ctx.drawImage(img, currentTargetFrame[t] * options.targetSize, 0, options.targetSize, options.targetSize, x, y, options.targetSize, options.targetSize);
-    currentTargetFrame[t]++;
-    if (currentTargetFrame[t] >= puzzleTargetImage.numAnimations) {
-      currentTargetFrame[t] = 0;
-    }
+    var puzzleTargetImages = images[currentPuzzle.type].target;
+    
+    $.each(puzzleTargetImages, function(i, targetImage) {
+      var img = targetImage.img;
+      var x = targetX(target);
+      var y = targetY(target);
+      var targetFrame = currentTargetFrame[i][t];
+      ctx.drawImage(img, targetFrame * options.targetSize, 0, options.targetSize, options.targetSize, x, y, options.targetSize, options.targetSize);
+      currentTargetFrame[i][t]++;
+      if (targetFrame >= targetImage.numAnimations) {
+        currentTargetFrame[i][t] = 0;
+      }
+    });
   };
   
   var drawVerticalWalls = function(opt) {
@@ -314,12 +315,19 @@ function($, AntiMazeData, Constants) {
     
     currentPuzzle = $.extend(true, {}, puzzle);
     
+    $.each(images[currentPuzzle.type].target, function(i) {
+      currentTargetFrame[i] = []; 
+    });
+    
     $.each(currentPuzzle.targets, function(t, target) {
       if (!target.fake) {
         numTotalTargets++;
       }
+      
       currentTargets.push(target);
-      currentTargetFrame.push(0); 
+      $.each(currentTargetFrame, function(i, targetFrames) {
+        targetFrames.push(0); 
+      });
     });
     
     // wall shadows
@@ -345,51 +353,68 @@ function($, AntiMazeData, Constants) {
   var loadImages = function() {
     $.each(images, function(i, typeImages) {
       for (var t in typeImages) {
-        var img = new Image();
-        img.onload = function() {
-          imagesLoaded++;
-          if (imagesLoaded == expectedImages) {
-            initMenu();
-          }
-        };
-        img.src = "images/anti-maze/" + typeImages[t].name;
-        typeImages[t].img = img;
+        var typeImage = typeImages[t];
+        var images = $.isArray(typeImage) ? typeImage : [typeImage];
+        
+        $.each(images, function(i, image) {
+          var img = new Image();
+          img.onload = function() {
+            imagesLoaded++;
+            if (imagesLoaded == expectedImages) {
+              initMenu();
+            }
+          };
+          img.src = "images/anti-maze/" + image.name;
+          image.img = img;
+        });
       }
     });
   };
   
   var move = function(x, y) {
     //console.log("attempting to move from (" + playerPos.x + "," + playerPos.y + ") to (" + (playerPos.x + x) + "," + (playerPos.y + y) + ")");
+    var crossedBoundary = isCrossingBoundary(x, y);
     
-    if (isCrossingBoundary(x, y) && !currentPuzzle.allowsWrapping) {
+    if (crossedBoundary && !currentPuzzle.allowsWrapping) {
       //console.log("crossing boundary, wrapping allowed = " + currentPuzzle.allowsWrapping);
       return false;
     }
 
-    var wallX = Math.max(playerPos.x, playerPos.x + x) - 0.5;
-    var wallY = playerPos.y;
-    var walls = null;
+    var wallX = 0;
+    var wallY = 0;
     var isWallThere = false;
-    var isAllowed = false; 
     
     if (x) {
-      wallX = Math.max(playerPos.x, playerPos.x + x) - 0.5;
+      wallX = (crossedBoundary ? 0 : Math.max(playerPos.x, playerPos.x + x)) - 0.5;
       wallY = playerPos.y;
       isWallThere = isWallHere(currentPuzzleVerticalWalls, wallX, wallY);
       if (!!isWallThere && isWallThere.temporary) {
-        clearVerticalWall(wallX, wallY, isWallThere.index);
+        moveThruTemporaryVerticalWall(wallX, wallY, isWallThere.index);
+        
+        if (crossedBoundary) {
+          var otherBoundaryX = currentPuzzle.width - 0.5;
+          moveThruTemporaryVerticalWall(otherBoundaryX, wallY, isWallHere(currentPuzzleVerticalWalls, otherBoundaryX, wallY).index);
+        }
       }
     } else if (y) {
       wallX = playerPos.x;
-      wallY = Math.max(playerPos.y, playerPos.y + y) - 0.5;
-      walls = currentPuzzleHorizontalWalls;
+      wallY = (crossedBoundary ? 0 : Math.max(playerPos.y, playerPos.y + y)) - 0.5;
       isWallThere = isWallHere(currentPuzzleHorizontalWalls, wallX, wallY);
       if (!!isWallThere && isWallThere.temporary) {
-        clearHorizontalWall(wallX, wallY, isWallThere.index);
+        moveThruTemporaryHorizontalWall(wallX, wallY, isWallThere.index);
+        
+        if (crossedBoundary) {
+          var otherBoundaryY = currentPuzzle.height - 0.5;
+          moveThruTemporaryHorizontalWall(wallX, otherBoundaryY, isWallHere(currentPuzzleHorizontalWalls, wallX, otherBoundaryY).index);
+        }
       }
     }
     
-    isAllowed = !(playerMovingThruWalls ^ !!isWallThere);
+    var isAllowed = !(playerMovingThruWalls ^ !!isWallThere);
+    // Can always move through a temporary wall
+    if (isWallThere && isWallThere.temporary) {
+      isAllowed = true;
+    }
     //console.log("wall at (" + wallX + "," + wallY + ")=" + !!isWallThere + ", allowed=" + isAllowed);
 
     if (isAllowed) {
@@ -400,6 +425,11 @@ function($, AntiMazeData, Constants) {
       if (targetIndex >= 0) {
         clearTarget(targetIndex);
         numTargetsFound++;
+        
+        if (currentPuzzle.targetSwitchesMovementRule) {
+          playerMovingThruWalls = !playerMovingThruWalls;
+        }
+        
         if (numTargetsFound == numTotalTargets) {
           playerWins();
           return false;
@@ -407,6 +437,58 @@ function($, AntiMazeData, Constants) {
       }
       
       drawPlayer();
+    }
+  };
+  
+  var moveThruTemporaryHorizontalWall = function(wallX, wallY, wallIndex) {
+    if (!currentPuzzle.horizontal[wallIndex]) {
+      return false;
+    }
+    
+    // Sky puzzles cause a player moving thru a temp wall to turn the wall into a real one
+    // rather than clearing it like mountain puzzles
+    if (currentPuzzle.targetSwitchesMovementRule && !playerMovingThruWalls) {
+      currentPuzzle.horizontal[wallIndex] = currentPuzzle.horizontal[wallIndex].replace(temporaryWallIndicator, "");
+      var wallNowPermanent = parseLineData(currentPuzzle.horizontal[wallIndex].split(""));
+      storeHorizontalWalls(wallNowPermanent, wallIndex);
+      drawHorizontalWall(wallNowPermanent, {shadow:false}); 
+    } else {
+      var wallLine = parseLineData(currentPuzzle.horizontal[wallIndex].split(""));
+      // clear the wall first
+      drawHorizontalWall(wallLine, {shadow:true, clear:true});
+      // delete it from the local arrays
+      currentPuzzleHorizontalWalls[wallX][wallY] = null;
+      currentPuzzle.horizontal[wallIndex] = null;
+      // re-draw other walls
+      drawHorizontalWalls({shadow:true});
+      drawHorizontalWalls({shadow:false});
+      drawVerticalWalls({shadow:false});
+    }
+  };
+  
+  var moveThruTemporaryVerticalWall = function(wallX, wallY, wallIndex) {
+    if (!currentPuzzle.vertical[wallIndex]) {
+      return;
+    }
+    
+    // Sky puzzles cause a player moving thru a temp wall to turn the wall into a real one
+    // rather than clearing it like mountain puzzles
+    if (currentPuzzle.targetSwitchesMovementRule && !playerMovingThruWalls) {
+      currentPuzzle.vertical[wallIndex] = currentPuzzle.vertical[wallIndex].replace(temporaryWallIndicator, "");
+      var wallNowPermanent = parseLineData(currentPuzzle.vertical[wallIndex].split(""));
+      storeVerticalWalls(wallNowPermanent, wallIndex);
+      drawVerticalWall(wallNowPermanent, {shadow:false}); 
+    } else {
+      var wallLine = parseLineData(currentPuzzle.vertical[wallIndex].split(""));
+      // clear the wall first
+      drawVerticalWall(wallLine, {shadow:true, clear:true});
+      // delete it from the local arrays
+      currentPuzzleVerticalWalls[wallX][wallY] = null;
+      currentPuzzle.vertical[wallIndex] = null;
+      // re-draw other walls
+      drawVerticalWalls({shadow:true}); 
+      drawVerticalWalls({shadow:false}); 
+      drawHorizontalWalls({shadow:false});
     }
   };
   
@@ -426,7 +508,7 @@ function($, AntiMazeData, Constants) {
       tileX: tileX,
       tileY: tileY,
       len: parseInt(lineData[2], 36),
-      temporary: (lineData.length > 3 && lineData[3] == "~") 
+      temporary: (lineData.length > 3 && lineData[3] === temporaryWallIndicator) 
     };
   };
   

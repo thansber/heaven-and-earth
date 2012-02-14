@@ -6,7 +6,7 @@ function() {
     Ocean: "ocean",
     Desert: "desert",
     Mountain: "mountain",
-    Sky:" sky"
+    Sky: "sky"
   };
   
   return {
