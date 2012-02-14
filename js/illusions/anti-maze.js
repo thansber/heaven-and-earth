@@ -7,6 +7,9 @@ function($, AntiMazeData, Constants) {
   var ctx = null;
   var $board = null;
   var $menu = null;
+  var $header = null;
+  var $win = null;
+  var $levels = null;
   
   var keysPressed = {};
   var images = {};
@@ -100,6 +103,12 @@ function($, AntiMazeData, Constants) {
     }
   };
   
+  var adjustNavigationButtons = function(index) {
+    $header
+      .find(".prev").toggle(index > 0).end()
+      .find(".next").toggle(index < $menu.find("li:not(.type)").length);
+  };
+  
   var animate = function() {
     if (gameOver) {
       return;
@@ -126,6 +135,10 @@ function($, AntiMazeData, Constants) {
     var target = currentTargets[index];
     ctx.clearRect(targetX(target), targetY(target), options.targetSize, options.targetSize);
     currentTargets.splice(index, 1);
+  };
+  
+  var currentPuzzleIndex = function() {
+    return $levels.index($menu.find(".selected"));
   };
   
   var drawHorizontalWalls = function(opt) {
@@ -224,12 +237,19 @@ function($, AntiMazeData, Constants) {
   
   var init = function(opt) {
     loadImages();
+    
     options = $.extend(options, opt);
     canvas = document.getElementById("anti-maze"); 
     ctx = canvas.getContext("2d");
+    
+    var $section = $("section.anti-maze");
     $board = $(canvas).closest(".board");
-    $menu = $("section.anti-maze").find(".menu");
+    $header = $section.find("header");
+    $menu = $section.find(".menu");
     $win = $board.find(".win");
+    
+    initMenu();
+    $levels = $menu.find("li:not(.type)");
     
     $(window).keydown(function(event) {
       var key = event.keyCode + "";
@@ -243,6 +263,25 @@ function($, AntiMazeData, Constants) {
       return !isArrowKey[key];
     });
     
+    $header.click(function(e) {
+      var $target = $(e.target);
+      
+      if ($target.is(".button")) {
+        var index = currentPuzzleIndex();
+        var destinationIndex = index;
+        
+        adjustNavigationButtons(index);
+        
+        if ($target.is(".prev")) {
+          destinationIndex--;
+        } else if ($target.is(".next")) {
+          destinationIndex++;
+        }
+        $levels.eq(destinationIndex).click();
+      }
+      
+    });
+    
     $menu.click(function(e) {
       var $this = $(e.target);
       
@@ -251,7 +290,12 @@ function($, AntiMazeData, Constants) {
         var index = $this.index() - 1;
         var puzzle = AntiMazeData.lookup(type, index);
         load(puzzle);
-        $menu.toggleClass("show");
+        $menu.find(".selected").removeClass("selected");
+        $this.addClass("selected");
+        adjustNavigationButtons(currentPuzzleIndex());
+        if ($menu.hasClass("show")) {
+          $menu.toggleClass("show");
+        }
       } else {
         $menu.toggleClass("show");
       }
@@ -262,8 +306,8 @@ function($, AntiMazeData, Constants) {
   
   var initMenu = function() {
     for (var type in AntiMazeData.All) {
-      var $levels = $menu.find(".levels." + type);
-      $levels.find("li:gt(0)").remove();
+      var $levelsForType = $menu.find(".levels." + type);
+      $levelsForType.find("li:gt(0)").remove();
       var puzzles = AntiMazeData.All[type];
       $.each(puzzles, function(i, puzzle) {
         var levels = [];
@@ -271,7 +315,7 @@ function($, AntiMazeData, Constants) {
         levels[c++] = "<li class=\"puzzle\">";
         levels[c++] = puzzle.name;
         levels[c++] = "</li>";
-        $levels.append($(levels.join("")));
+        $levelsForType.append($(levels.join("")));
       });
     }
   };
@@ -361,7 +405,7 @@ function($, AntiMazeData, Constants) {
           img.onload = function() {
             imagesLoaded++;
             if (imagesLoaded == expectedImages) {
-              initMenu();
+              loadInitialPuzzle();
             }
           };
           img.src = "images/anti-maze/" + image.name;
@@ -369,6 +413,10 @@ function($, AntiMazeData, Constants) {
         });
       }
     });
+  };
+  
+  var loadInitialPuzzle = function() {
+    $menu.find(".puzzle:eq(0)").click();
   };
   
   var move = function(x, y) {

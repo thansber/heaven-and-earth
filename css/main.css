@@ -45,6 +45,40 @@ body {
     width: 5em;
 }
 
+header {
+    margin: 0 auto;
+    position: relative;
+    width: 50%;
+}
+
+.title {
+    margin: 0;
+    padding: 0;
+}
+
+.puzzle.button {
+    border: 1px solid #000;
+    border-radius: 12px;
+    box-shadow: 2px 2px 2px #444;
+    color: white;
+    font-size: 0.7em;
+    padding: 3px 8px 4px;
+    position: absolute;
+    top: 0;
+}
+
+.puzzle.button:active {
+    top: 1px;
+}
+
+.prev.puzzle.button {
+    left: 0;
+}
+
+.next.puzzle.button {
+    right: 0;
+}
+
 body.ocean,body.ocean .board {
     background-color: #00E7FF;
 }
@@ -55,6 +89,11 @@ body.ocean .board .win {
     color: #0000FF;
 }
 
+body.ocean .puzzle.button {
+    background: linear-gradient(#008EFF, #00E7FF) no-repeat;
+    border-color: #008EFF;
+}
+
 body.desert,boy.desert .board {
     background-color: #F7BA8A;
 }
@@ -63,6 +102,11 @@ body.desert .board .win {
     background-color: #F7BA8A;
     border-color: #FFFFFF #926138 #926138 #FFFFFF;
     color: #926138;
+}
+
+body.desert .puzzle.button {
+    background: linear-gradient(#C7835D, #926138) no-repeat;
+    border-color: #C7835D;
 }
 
 body.mountain,body.mountain .board {
@@ -76,6 +120,11 @@ body.mountain .board .win {
     color: #616DA6;
 }
 
+body.mountain .puzzle.button {
+    background: linear-gradient(#A6B6F7, #616DA6) no-repeat;
+    border-color: #A6B6F7;
+}
+
 body.sky,body.sky .board {
     background-color: #82FFFF;
 }
@@ -86,93 +135,7 @@ body.sky .board .win {
     color: #00A2FF;
 }
 
-.title {
-    margin: 0;
-    padding: 0;
-}
-
-.menu {
-    background-color: white;
-    border: 2px solid #555;
-    border-top: 0;
-    border-radius: 10px;
-    height: 3em;
-    left: 1em;
-    overflow: hidden;
-    position: absolute;
-    top: -0.5em;
-    transition-property: height, width;
-    transition-duration: 0.5s;
-    transition-timing-function: ease;
-    width: 10em;
-    z-index: 2;
-}
-
-.menu h1 {
-    background: linear-gradient(#555, #222) no-repeat;
-    color: white;
-    cursor: pointer;
-    font-size: 1.4em;
-    margin: 0;
-    padding: 0.75em 30px 0.5em;
-}
-
-.menu h1:hover {
-    background: linear-gradient(#222, #555) no-repeat;
-}
-
-.menu .arrow {
-    border-top: 10px solid white;
-    border-right: 10px solid transparent;
-    border-left: 10px solid transparent;
-    cursor: pointer;
-    height: 0;
-    right: 0.8em;
-    position: absolute;
-    top: 1.5em;
-    width: 0;
-}
-
-.menu .levels {
-    float: left;
-    list-style-type: none;
-    margin: 0;
-    padding: 0.8em 0.8em 0.4em 1em;
-    text-align: left;
-}
-
-.menu .levels li {
-    cursor: pointer;
-    font-size: 0.9em;
-    padding-bottom: 0.2em;
-}
-
-.menu .levels li.type {
-    cursor: default;
-    font-size: 1.2em;
-    padding-bottom: 0.2em;
-}
-
-.menu .levels li:hover {
-    color: #4c9335;
-}
-
-.menu .levels li.type:hover {
-    color: #222;
-}
-
-.menu.show {
-    height: 23em;
-    width: 40em;
-}
-
-.menu.show h1 {
-    border-bottom-right-radius: 0;
-}
-
-.menu.show .arrow {
-    border-top: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid white;
+body.sky .puzzle.button {
+    background: linear-gradient(#1CD3FF, #00A2FF) no-repeat;
+    border-color: #1CD3FF;
 }

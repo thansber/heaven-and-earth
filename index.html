@@ -3,6 +3,7 @@
   <title>Heaven & Earth - Illusions</title>
   <meta http-equiv="X-UA-Compatible" content="IE=8" />
   <link type="text/css" rel="stylesheet" href="css/main.css"/>
+  <link type="text/css" rel="stylesheet" href="css/menu.css"/>
   <script type="text/javascript" src="js/lib/prefixfree.min.js"></script>
   <script type="text/javascript" data-main="js/main" src="js/lib/require-jquery-min.js"></script>
   <script type="text/javascript">require.config({baseUrl:"js"});</script>
@@ -12,7 +13,7 @@
 <div id="version">v0.6</div>
 
 <section class="anti-maze illusion">
-  <div class="menu show">
+  <div class="menu">
     <h1>Menu</h1>
     <div class="arrow"></div>
     <ul class="ocean levels"><li class="type">Ocean</li></ul>
@@ -20,7 +21,11 @@
     <ul class="mountain levels"><li class="type">Mountain</li></ul>
     <ul class="sky levels"><li class="type">Sky</li></ul>
   </div>
-  <h2 class="title"></h2>
+  <header>
+    <button class="prev puzzle button">&lt;&lt; Prev</button>
+    <h2 class="title"></h2>
+    <button class="next puzzle button">Next &gt;&gt;</button>
+  </header>
   <div class="board">
     <canvas id="anti-maze"></canvas>
     <h3 class="win">Illusion Mastered!</h3>
