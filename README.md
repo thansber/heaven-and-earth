@@ -12,11 +12,11 @@ Illusions being worked on
 
 TODOs
 -----
-* get proper colors for puzzle types
 * holding down key moves multiple times?
 * allow mouse movement?
 * text shadow for win message
+* puzzle navigation
 
 Future Illusion plans
 ---------------------
-
+* Changing Bodies
