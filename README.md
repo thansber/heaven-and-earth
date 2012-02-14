@@ -15,7 +15,6 @@ TODOs
 * holding down key moves multiple times?
 * allow mouse movement?
 * text shadow for win message
-* puzzle navigation
 
 Future Illusion plans
 ---------------------
