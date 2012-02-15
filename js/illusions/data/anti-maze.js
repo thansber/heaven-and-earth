@@ -522,19 +522,33 @@ function(Constants) {
                  "c11","c41","cb1","d03","d21","d31","da1","e12","e41","e51","e64","e82","e91","f22",
                  "f31","fd1","g53","g91","ga1","gb2","gc1","h03","h31","h42","h84","hd2","i11","i73",
                  "i92","ia1","ic1","j22","j32","j62","jb2","k11","k41","k51","ka1","kc1","kd1"]});
-  new Puzzle(Constants.Types.Sky, "Right Off the Road", {
-    width:14, height:9, player:{x:0,y:0}, targets:[{x:4,y:4}],
-    vertical: [],
-    horizontal: []});
-  new Puzzle(Constants.Types.Sky, "Right Off the Road", {
-    width:14, height:9, player:{x:0,y:0}, targets:[{x:4,y:4}],
-    vertical: [],
-    horizontal: []});
-  new Puzzle(Constants.Types.Sky, "Right Off the Road", {
-    width:14, height:9, player:{x:0,y:0}, targets:[{x:4,y:4}],
-    vertical: [],
-    horizontal: []});
-  
+  new Puzzle(Constants.Types.Sky, "Sequence", {
+    width:14, height:9, player:{x:3,y:3}, 
+    targets:[{x:1,y:0},{x:1,y:1},{x:3,y:4},{x:9,y:6},{x:10,y:6}],
+    allowsWrapping: false,
+    vertical: ["116","201","225","281","323","361","381","422","481","522","581","624","672","724",
+               "761~","772","833","872","903","a61~","e09"],
+    horizontal: ["071~","111","172","225","237","246","251","261","271","286","29c","652","662","672",
+                 "682","905"]});
+  new Puzzle(Constants.Types.Sky, "Double Spiral Doubled", {
+    width:15, height:14, player:{x:14,y:0}, 
+    targets:[{x:1,y:0},{x:2,y:1},{x:3,y:2},{x:4,y:3},{x:5,y:4},{x:6,y:5},{x:7,y:6},
+             {x:8,y:6},{x:9,y:5},{x:10,y:4},{x:11,y:3},{x:12,y:2},{x:13,y:1},
+             {x:0,y:13},{x:1,y:12},{x:2,y:11},{x:3,y:10},{x:4,y:9},{x:5,y:8},{x:6,y:7},
+             {x:7,y:7},{x:8,y:8},{x:9,y:9},{x:10,y:10},{x:11,y:11},{x:12,y:12},{x:13,y:13}],
+    vertical: ["00e","10d","21b","329","437","545","653","761","871","963","a55","b47","c39","d2b",
+               "e1d","f0e"],
+    horizontal: ["00f","0ef","1dc","21c","2ca","32a","3b8","438","4a6","546","594","654","682","762"]});
+  new Puzzle(Constants.Types.Sky, "Frieze", {
+    width:19, height:12, player:{x:9,y:3}, 
+    targets:[{x:2,y:5},{x:3,y:5},{x:4,y:5},{x:5,y:5},{x:6,y:5},{x:7,y:5},{x:8,y:5},{x:9,y:5},
+             {x:10,y:5},{x:11,y:5},{x:12,y:5},{x:13,y:5},{x:14,y:5},{x:15,y:5},{x:16,y:5},
+             {x:2,y:6},{x:3,y:6},{x:4,y:6},{x:5,y:6},{x:6,y:6},{x:7,y:6},{x:8,y:6},{x:9,y:6},
+             {x:10,y:6},{x:11,y:6},{x:12,y:6},{x:13,y:6},{x:14,y:6},{x:15,y:6},{x:16,y:6}],
+    vertical: ["11a","244","353","461","551","643","744","853","901","961","9b1","a01","a51","ab1",
+               "b43","c44","d53","e61","f51","g43","h44","i1a"],
+    horizontal: ["118","181","1b8","244","352","384","461","472","744","852","884","911~","961","972",
+                 "9b1~","a18","ab8","c44","d52","d84","e61","e72","h41"]});
   
   return {
     All : ALL_BY_INDEX,
