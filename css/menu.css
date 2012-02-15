@@ -1,4 +1,3 @@
-
 .menu {
     background-color: white;
     border: 2px solid #555;
@@ -45,8 +44,9 @@
     float: left;
     list-style-type: none;
     margin: 0;
-    padding: 0.8em 0.8em 0.4em 1em;
+    padding: 0.8em 1% 0.4em;
     text-align: left;
+    width: 23%;
 }
 
 .menu .levels li {
@@ -62,16 +62,12 @@
 }
 
 .menu .levels li:hover {
-    color: #4c9335;
-}
-
-.menu .levels li.type:hover {
-    color: #222;
+    color: #AC1919;
 }
 
 .menu.show {
     height: 23em;
-    width: 40em;
+    width: 93%;
 }
 
 .menu.show h1 {
@@ -83,4 +79,20 @@
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-bottom: 10px solid white;
+}
+
+.menu .ocean li.type {
+    color: #008EFF;
+}
+
+.menu .desert li.type {
+    color: #926138;
+}
+
+.menu .mountain li.type {
+    color: #A6B6F7;
+}
+
+.menu .sky li.type {
+    color: #1CD3FF;
 }
