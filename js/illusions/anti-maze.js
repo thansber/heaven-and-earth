@@ -106,7 +106,7 @@ function($, AntiMazeData, Constants) {
   var adjustNavigationButtons = function(index) {
     $header
       .find(".prev").toggle(index > 0).end()
-      .find(".next").toggle(index < $menu.find("li:not(.type)").length);
+      .find(".next").toggle(index < $menu.find("li:not(.type)").length - 1);
   };
   
   var animate = function() {
